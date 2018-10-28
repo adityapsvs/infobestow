@@ -4,11 +4,20 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongodb = require('mongodb');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+var MongoClient = require('mongodb').MongoClient;
+var db;
+
+MongoClient.connect("mongodb://localhost:27017/infobestow", { useNewUrlParser: true }, function(err, database) {
+  if(err) return console.error(err);
+  db = database;
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
