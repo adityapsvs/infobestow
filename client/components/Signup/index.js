@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Button, Container, Divider, Form, Grid, Header, Icon } from 'semantic-ui-react';
+import { Button, Container, Divider, Form, Grid, Header, Icon, Message } from 'semantic-ui-react';
 import './index.css';
 
 export default class Signup extends Component {
@@ -11,7 +11,10 @@ export default class Signup extends Component {
 			lastName: '',
 			email: '',
 			password: '',
-			showPassword: false
+			showPassword: false,
+			showError: false,
+			showSuccess: false,
+			resMsg: ''
 		};
 
 		this.handleChange = (event) => {
@@ -39,12 +42,26 @@ export default class Signup extends Component {
 			axios
 				.post('/signup', state)
 				.then(res => {
-					console.log(res);
-				})
+					if(res.data.error) {
+						this.setState({ showError: true, resMsg: res.data.error, email: '', password: '' });
+						setTimeout(() => {
+							this.setState({ showError: false });
+						}, 3000);
+					}
+					else if(res.data.success) {
+						this.setState({ showSuccess: true, resMsg: res.data.success, firstName: '', lastName: '', email: '', password: '' });
+						setTimeout(() => {
+							this.setState({ showSuccess: false });
+						}, 3000);
+					}
+				});
 		}
 	}
 
 	render() {
+		let msg;
+		if(this.state.showSuccess) msg = <Message success header={this.state.resMsg} />;
+		else if(this.state.showError) msg = <Message negative header={this.state.resMsg} />;
 		return (
 			<div className='signup-form'>
 				<Container>
@@ -57,23 +74,10 @@ export default class Signup extends Component {
 						</Form.Group>
 						<Form.Input fluid value={this.state.email} onChange={this.handleChange} name='email' label='EMAIL' />
 						<Form.Input fluid value={this.state.password} onChange={this.handleChange} name='password' type='password' label='PASSWORD' />
-						<Grid columns={3}>
-							<Grid.Column>
-								<Form.Button size='large' color='blue'>Submit</Form.Button>
-							</Grid.Column>
-							<Grid.Column>
-								<Button size='large' color='facebook'>
-									<Icon name='facebook' /> Facebook
-								</Button>
-							</Grid.Column>
-							<Grid.Column>
-								<Button size='large' color='google plus'>
-									<Icon name='google plus' /> Google+
-								</Button>
-							</Grid.Column>
-						</Grid>
+						<Form.Button size='large' color='blue'>Submit</Form.Button>
 					</Form>
 				</Container>
+				{msg}
 			</div>
 		);
 	}
