@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# keys
+/server/config/keys.js
+
 # testing
 /coverage
 

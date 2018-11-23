@@ -18,6 +18,7 @@ export default class Signup extends Component {
 		};
 
 		this.handleChange = (event) => {
+			console.log('from sign up');
 			switch(event.target.name) {
 				case 'firstName':
 					this.setState({ firstName: event.target.value });
@@ -38,7 +39,7 @@ export default class Signup extends Component {
 
 		this.handleSubmit = (event) => {
 			event.preventDefault();
-			let {showPassword, ...state} = this.state;
+			let {showPassword, showError, showSuccess, resMsg, ...state} = this.state;
 			axios
 				.post('/signup', state)
 				.then(res => {
@@ -63,10 +64,8 @@ export default class Signup extends Component {
 		if(this.state.showSuccess) msg = <Message success header={this.state.resMsg} />;
 		else if(this.state.showError) msg = <Message negative header={this.state.resMsg} />;
 		return (
-			<div className='signup-form'>
+			<div>
 				<Container>
-					<Header as='h1' align='center'>Sign Up</Header>
-					<Divider hidden />
 					<Form onSubmit={this.handleSubmit} size='large'>
 						<Form.Group widths='equal'>
 							<Form.Input fluid value={this.state.firstName} onChange={this.handleChange} name='firstName' label='FIRST NAME' />
@@ -74,7 +73,7 @@ export default class Signup extends Component {
 						</Form.Group>
 						<Form.Input fluid value={this.state.email} onChange={this.handleChange} name='email' label='EMAIL' />
 						<Form.Input fluid value={this.state.password} onChange={this.handleChange} name='password' type='password' label='PASSWORD' />
-						<Form.Button size='large' color='blue'>Submit</Form.Button>
+						<Form.Button size='large' color='blue'>Sign Up</Form.Button>
 					</Form>
 				</Container>
 				{msg}

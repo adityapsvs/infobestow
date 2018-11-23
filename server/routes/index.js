@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var bcrypt = require('bcrypt');
+var passport = require('passport');
 const User = require('../models/user');
 
 /* GET home page. */
@@ -31,15 +32,12 @@ router.post('/signup', function(req, res) {
 });
 
 router.post('/login', function(req, res) {
-	console.log(req.body)
 	let { email, password } = req.body;
-	User.find({ email: email }, function(err, docs) {
+	User.find({ email: email }, 'password', function(err, docs) {
 		if(err) res.send({ error: 'Something went wrong!' });
 		else if(docs.length === 0) res.send({ error:  'There\'s no user with that email address!' });
 		else {
-			var hash = docs[0].password;
-			console.log(docs[0])
-			console.log(Object.keys(docs[0]))
+			var hash = docs[0].toObject().password;
 			bcrypt.compare(password, hash, function(err, match) {
 				if(err) res.send({ error: 'Something went wrong!' });
 				else if(match === false) res.send({ error: 'Incorrect password!' });
@@ -48,5 +46,9 @@ router.post('/login', function(req, res) {
 		}
 	});
 });
+
+router.get('/login/google', passport.authenticate('google', {
+	scope: ['profile']
+}));
 
 module.exports = router;
