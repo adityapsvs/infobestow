@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Button, Container, Divider, Form, Grid, Header, Icon, Segment } from 'semantic-ui-react';
+import { Redirect } from 'react-router-dom';
+import { Button, Container, Divider, Form, Grid, Header, Icon, Message, Segment } from 'semantic-ui-react';
 import './index.css';
 import Signup from '../Signup';
 
@@ -11,83 +12,83 @@ export default class Login extends Component {
 			email: '',
 			password: '',
 			showError: false,
-			showSignup: false
+			showSignup: false,
+			showSuccess: false,
+			resMsg: '',
+			redirect: false
 		}
-
-		this.toggleSignup = () => {
-			this.setState({ showSignup: true });
-		}
-
-		this.handleChange = (event) => {
-			console.log('from login');
-			switch(event.target.name) {
-				case 'email':
-					this.setState({ email: event.target.value });
-					break;
-				case 'password':
-					this.setState({ password: event.target.value });
-					break;
-				default:
-					break;
-			}
-		}
-
-		this.handleSubmit = (event) => {
-			event.preventDefault();
-			let {showError, showSignup, ...state} = this.state;
-			axios
-				.post('/login', state)
-				.then(res => {
-					if(res.data.error) {
-						this.setState({ showError: true, resMsg: res.data.error, password: '' });
-						setTimeout(() => {
-							this.setState({ showError: false });
-						}, 3000);
-					}
-					else if(res.data.success) {
-						this.setState({ showSuccess: true, resMsg: res.data.success });
-						setTimeout(() => {
-							this.setState({ showSuccess: false });
-						}, 3000);
-					}
-				});
-		}
-
-		this.getLoginForm = () => (
-			<Form onSubmit={this.handleSubmit} size='large' hidden={this.state.showSignup}>
-				<Form.Input fluid value={this.state.email} onChange={this.handleChange} name='email' label='EMAIL' />
-				<Form.Input fluid value={this.state.password} onChange={this.handleChange} name='password' type='password' label='PASSWORD' />
-				<Grid columns={2}>
-					<Grid.Column>
-						<Form.Button size='large' color='blue'>Submit</Form.Button>
-					</Grid.Column>
-					<Grid.Column>
-						<Button size='large' color='teal' onClick={this.toggleSignup}>
-							Signup
-						</Button>
-					</Grid.Column>
-				</Grid>
-			</Form>
-		);
-
-		this.googleLogin = () => {
-			axios
-			.get('/login/google')
-			.then(res => {
-				console.log(res);
-			});
-		}
-
 	}
 
+	showSignup = () => {
+		this.setState({ showSignup: true });
+	}
+
+	showLogin = () => {
+		this.setState({ showSignup: false });
+	}
+
+	handleChange = (event) => {
+		switch(event.target.name) {
+			case 'email':
+			this.setState({ email: event.target.value });
+			break;
+			case 'password':
+			this.setState({ password: event.target.value });
+			break;
+			default:
+			break;
+		}
+	}
+
+	handleSubmit = (event) => {
+		event.preventDefault();
+		let {showError, showSignup, ...state} = this.state;
+		axios
+		.post('/login', state)
+		.then(res => {
+			if(res.data.error) {
+				this.setState({ showError: true, resMsg: res.data.error, password: '' });
+				setTimeout(() => {
+					this.setState({ showError: false });
+				}, 3000);
+			}
+			else if(res.data.success) {
+				// this.setState({ showSuccess: true, resMsg: res.data.success });
+				// setTimeout(() => {
+				// 	this.setState({ showSuccess: false });
+				// }, 3000);
+				this.setState({ redirect: true });
+			}
+		});
+	}
+
+	getLoginForm = () => (
+		<Form onSubmit={this.handleSubmit} size='large' hidden={this.state.showSignup}>
+			<Form.Input fluid value={this.state.email} onChange={this.handleChange} name='email' label='EMAIL' />
+			<Form.Input fluid value={this.state.password} onChange={this.handleChange} name='password' type='password' label='PASSWORD' />
+			<Grid columns={2}>
+				<Grid.Column>
+					<Form.Button size='large' color='blue'>Login</Form.Button>
+				</Grid.Column>
+				<Grid.Column>
+					<Button size='large' color='teal' onClick={this.showSignup}>
+						Signup
+					</Button>
+				</Grid.Column>
+			</Grid>
+		</Form>
+	);
+
 	render() {
-		let form;
+		let form, msg;
 		if(this.state.showSignup) {
-			form = <Signup />;
+			form = <Signup showLogin={this.showLogin} />;
 		} else {
 			form = <this.getLoginForm />;
 		}
-
+		if(this.state.showSuccess) msg = <Message success header={this.state.resMsg} />;
+		else if(this.state.showError) msg = <Message negative header={this.state.resMsg} />;
+		if(this.state.redirect) return <Redirect to='/feed' />
 		return (
 			<Container>
 				<Divider hidden />
@@ -122,6 +123,7 @@ export default class Login extends Component {
 							</Grid.Column>
 						</Grid>
 					</Container>
+					{msg}
 				</div>
 			</Container>
 		);

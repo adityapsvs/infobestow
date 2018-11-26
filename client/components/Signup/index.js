@@ -16,47 +16,47 @@ export default class Signup extends Component {
 			showSuccess: false,
 			resMsg: ''
 		};
+	}
 
-		this.handleChange = (event) => {
-			console.log('from sign up');
-			switch(event.target.name) {
-				case 'firstName':
-					this.setState({ firstName: event.target.value });
+	handleChange = (event) => {
+		console.log('from sign up');
+		switch(event.target.name) {
+			case 'firstName':
+				this.setState({ firstName: event.target.value });
+				break;
+				case 'lastName':
+					this.setState({ lastName: event.target.value });
 					break;
-					case 'lastName':
-						this.setState({ lastName: event.target.value });
-						break;
-					case 'email':
-						this.setState({ email: event.target.value });
-						break;
-					case 'password':
-						this.setState({ password: event.target.value });
-						break;
-					default:
-						break;
-			}
+				case 'email':
+					this.setState({ email: event.target.value });
+					break;
+				case 'password':
+					this.setState({ password: event.target.value });
+					break;
+				default:
+					break;
 		}
+	}
 
-		this.handleSubmit = (event) => {
-			event.preventDefault();
-			let {showPassword, showError, showSuccess, resMsg, ...state} = this.state;
-			axios
-				.post('/signup', state)
-				.then(res => {
-					if(res.data.error) {
-						this.setState({ showError: true, resMsg: res.data.error, email: '', password: '' });
-						setTimeout(() => {
-							this.setState({ showError: false });
-						}, 3000);
-					}
-					else if(res.data.success) {
-						this.setState({ showSuccess: true, resMsg: res.data.success, firstName: '', lastName: '', email: '', password: '' });
-						setTimeout(() => {
-							this.setState({ showSuccess: false });
-						}, 3000);
-					}
-				});
-		}
+	handleSubmit = (event) => {
+		event.preventDefault();
+		let {showPassword, showError, showSuccess, resMsg, ...state} = this.state;
+		axios
+			.post('/signup', state)
+			.then(res => {
+				if(res.data.error) {
+					this.setState({ showError: true, resMsg: res.data.error, email: '', password: '' });
+					setTimeout(() => {
+						this.setState({ showError: false });
+					}, 3000);
+				}
+				else if(res.data.success) {
+					this.setState({ showSuccess: true, resMsg: res.data.success, firstName: '', lastName: '', email: '', password: '' });
+					setTimeout(() => {
+						this.setState({ showSuccess: false });
+					}, 3000);
+				}
+			});
 	}
 
 	render() {
@@ -73,7 +73,16 @@ export default class Signup extends Component {
 						</Form.Group>
 						<Form.Input fluid value={this.state.email} onChange={this.handleChange} name='email' label='EMAIL' />
 						<Form.Input fluid value={this.state.password} onChange={this.handleChange} name='password' type='password' label='PASSWORD' />
-						<Form.Button size='large' color='blue'>Sign Up</Form.Button>
+						<Grid columns={2}>
+							<Grid.Column>
+								<Form.Button size='large' color='blue'>Signup</Form.Button>
+							</Grid.Column>
+							<Grid.Column>
+								<Button size='large' color='teal' onClick={this.props.showLogin}>
+									Login
+								</Button>
+							</Grid.Column>
+						</Grid>
 					</Form>
 				</Container>
 				{msg}

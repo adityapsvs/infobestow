@@ -2,16 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
-import { BrowserRouter } from 'react-router-dom';
+import Feed from './components/Feed';
+import Profile from './components/Profile';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import 'semantic-ui-css/semantic.min.css';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-	<BrowserRouter
-		forceRefresh={true}
-	>
-		<App />
-	</BrowserRouter>, document.getElementById('root'));
+	<Router forceRefresh={true}>
+		<div>
+			<Route exact path='/' component={App} />
+			<Route exact path='/feed' component={Feed} />
+			<Route exact path='/profile' component={Profile} />
+		</div>
+	</Router>,
+	document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
